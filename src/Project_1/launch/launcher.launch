@@ -1,0 +1,10 @@
+<launch>
+
+    <!-- Nodes-->
+    <node pkg="pub_sub" type="publisher" name="my_publisher" output="screen"/>
+    <node pkg="pub_sub" type="sub" name="my_subscriber" output="screen" />
+
+    <!-- Params-->
+    <param name="mode" value="true" />
+    
+</launch>
