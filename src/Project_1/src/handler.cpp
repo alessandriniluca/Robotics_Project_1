@@ -21,9 +21,9 @@ class pub_sub{
 		float wheel_radius;
 		float gear_ratio;
 
-		void wheelsCallback(const sensor_msgs::JointState &wheelsInfo) {
+		void wheelsCallback(const sensor_msgs::JointState::ConstPtr &wheelsInfo) {
             geometry_msgs::TwistStamped msg;
-            test = wheelsInfo.name;
+            test = wheelsInfo->name;
             // msg.name = test
             pub.publish(msg);
         }
