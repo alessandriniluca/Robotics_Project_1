@@ -1,8 +1,7 @@
 <launch>
 
     <!-- Nodes-->
-    <node pkg="pub_sub" type="publisher" name="my_publisher" output="screen"/>
-    <node pkg="pub_sub" type="sub" name="my_subscriber" output="screen" />
+    <node pkg="Project_1" type="handler" name="my_handler" output="screen"/>
 
     <!-- Params-->
     <param name = "initial_pose_X" value="0" />
