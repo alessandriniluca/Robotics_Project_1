@@ -1,5 +1,6 @@
 #include "ros/ros.h"
-#include <sensor_msgs/JointStates.h>
+#include <sensor_msgs/JointState.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <string>
 
 /*
@@ -11,6 +12,22 @@
 
 
 class pub_sub{
+	private:
+		ros::Publisher pub;
+		ros::Subscriber sub;
+        std::vector<std::__cxx11::basic_string<char> > test;
+		float half_length;
+		float half_width;
+		float wheel_radius;
+		float gear_ratio;
+
+		void wheelsCallback(const sensor_msgs::JointState &wheelsInfo) {
+            geometry_msgs::TwistStamped msg;
+            test = wheelsInfo.name;
+            // msg.name = test
+            pub.publish(msg);
+        }
+
 	public:
 		pub_sub(ros::NodeHandle n){
 			ROS_INFO("Inizio costruttore.");
@@ -19,23 +36,9 @@ class pub_sub{
             n.getParam("/wheel_radius",wheel_radius);
             n.getParam("/gear_ratio",gear_ratio);
 			pub = n.advertise<geometry_msgs::TwistStamped>("cmd_vel",1000);
+			sub = n.subscribe("/wheel_states", 1000, &pub_sub::wheelsCallback, this);
+
 		}
-
-
-        void wheelsCallback(const sensor_msgs::JointStates &wheelsInfo) {
-
-            geometry_msgs::TwistStamped msg;
-            test = wheelsInfo.name;
-            msg.name = test
-            pub.publish(msg);
-        }
-
-	private:
-		
-		
-		ros::Publisher pub;
-        std::string test;
-		
 };
 
 
@@ -43,7 +46,7 @@ int main(int argc, char** argv){
 	ros::init(argc, argv, "handler");
 	ROS_INFO("Nodo handler partito.");
 	ros::NodeHandle n;
-    ros::Subscriber sub_wheels = n.subscribe("/wheel_states", 1000, wheelsCallback);
+	pub_sub handler(n);
 
 	ros::spin();
 	return 0;
