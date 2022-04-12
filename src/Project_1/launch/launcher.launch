@@ -5,6 +5,13 @@
     <node pkg="pub_sub" type="sub" name="my_subscriber" output="screen" />
 
     <!-- Params-->
-    <param name="mode" value="true" />
+    <param name = "initial_pose_X" value="0" />
+    <param name = "initial_pose_Y" value="0" />
+    <param name = "initial_pose_Theta" value="0" />
+    <param name = "encoder_resolution" value = "42"/>
+    <param name= "half_length" value="0.2"/>
+    <param name= "half_width" value="0.169"/>
+    <param name= "wheel_radius" value="0.07"/>
+    <param name= "gear_ratio" value="5"/>
     
 </launch>
