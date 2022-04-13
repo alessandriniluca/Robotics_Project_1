@@ -1,7 +1,7 @@
 <launch>
 
     <!-- Nodes-->
-    <node pkg="mecanum_wheels" type="odometry" name="my_odometry" output="screen">
+    <node pkg="mecanum_wheels" type="odometry" name="my_odometry" output="screen" clear_params="true">
 
         <!-- Params-->
         <param name = "initial_pose_X" value="0" />
@@ -14,6 +14,6 @@
         <param name= "gear_ratio" value="5"/>
     </node>
 
-    <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 world odom 10"/>
+    <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 world odom 10"/>
     
 </launch>
