@@ -3,6 +3,8 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_broadcaster.h>
+#include <cmath>
+#define _USE_MATH_DEFINES
 
 /*
 	DESCRIPTION
@@ -50,10 +52,11 @@ class odometry{
 
 
 			// Computing angular velocities
-			double w1 = (((wheelsInfo->position[0]-ticks[0])/encoder_resolution)/gear_ratio)/delta;
-			double w2 = (((wheelsInfo->position[1]-ticks[1])/encoder_resolution)/gear_ratio)/delta;
-			double w3 = (((wheelsInfo->position[2]-ticks[2])/encoder_resolution)/gear_ratio)/delta;
-			double w4 = (((wheelsInfo->position[3]-ticks[3])/encoder_resolution)/gear_ratio)/delta;
+			// encoder resolution is: #ticks every revolution, need to multiply by 2*pi rad/revolution
+			double w1 = (((wheelsInfo->position[0]-ticks[0])/encoder_resolution)*(M_PI*2)/gear_ratio)/delta;
+			double w2 = (((wheelsInfo->position[1]-ticks[1])/encoder_resolution)*(M_PI*2)/gear_ratio)/delta;
+			double w3 = (((wheelsInfo->position[2]-ticks[2])/encoder_resolution)*(M_PI*2)/gear_ratio)/delta;
+			double w4 = (((wheelsInfo->position[3]-ticks[3])/encoder_resolution)*(M_PI*2)/gear_ratio)/delta;
 
 			double vx = (wheel_radius/4) * (w1 + w2 + w3 + w4);
 			double vy = (wheel_radius/4) * (-w1 + w2 + w3 -w4);
@@ -75,12 +78,18 @@ class odometry{
 			// Computing position
 			integration_method = "RUNGEKUTTA";
 			if(integration_method == "EULER"){
-				x += vx*delta*cos(th);
-				y += vy*delta*sin(th);
+				//x += vx*delta*cos(th);
+				//y += vy*delta*sin(th);
+				//th += w*delta;
+				x += (vx*cos(th)-vy*sin(th))*delta;
+				y += (vx*sin(th)+vy*cos(th))*delta;
 				th += w*delta;
 			}else if (integration_method == "RUNGEKUTTA"){
-				x += vx*delta*cos(th+ (w*delta/2));
-				y += vy*delta*sin(th+ (w*delta/2));
+				//x += vx*delta*cos(th+ (w*delta/2));
+				//y += vy*delta*sin(th+ (w*delta/2));
+				//th += w*delta;
+				x += (vx*cos(th+ (w*delta/2))-vy*sin(th+(w*delta/2)))*delta;
+				y += (vx*sin(th+ (w*delta/2))+vy*cos(th+(w*delta/2)))*delta;
 				th += w*delta;
 			}else{
 				ROS_ERROR("The selected integration method does not exists. Options: EULER, RUNGEKUTTA");
