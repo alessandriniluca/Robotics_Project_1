@@ -92,7 +92,8 @@ class odometry{
 			odom_msg.pose.pose.position.y = y;
 			odom_msg.pose.pose.position.z = 0;
 			odom_msg.pose.pose.orientation = tf::createQuaternionMsgFromYaw(th);
-			odom_msg.header.frame_id = "base_link";
+			odom_msg.header.frame_id = "odom";
+			odom_msg.child_frame_id = "base_link";
 			pub_odom.publish(odom_msg);
 
 			//tf
