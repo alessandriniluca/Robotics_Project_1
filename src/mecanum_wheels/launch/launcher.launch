@@ -16,4 +16,18 @@
 
     <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 world odom 10"/>
     
+    <!-- Nodes-->
+    <node pkg="mecanum_wheels" type="wheelsControl" name="my_wheelsControl" output="screen" clear_params="true">
+
+        <!-- Params-->
+        <param name = "initial_pose_X" value="0" />
+        <param name = "initial_pose_Y" value="0" />
+        <param name = "initial_pose_Theta" value="0" />
+        <param name = "encoder_resolution" value = "42"/>
+        <param name= "half_length" value="0.2"/>
+        <param name= "half_width" value="0.169"/>
+        <param name= "wheel_radius" value="0.075"/>
+        <param name= "gear_ratio" value="5"/>
+    </node>
+
 </launch>

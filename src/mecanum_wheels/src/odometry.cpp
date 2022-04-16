@@ -1,8 +1,11 @@
+#include <iostream>
 #include "ros/ros.h"
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_broadcaster.h>
+#include <mecanum_wheels/parametersConfig.h>
+#include <dynamic_reconfigure/server.h>
 #include <cmath>
 #define _USE_MATH_DEFINES
 
@@ -33,6 +36,16 @@ class odometry{
 		double th; //counter-clockwise
 		std::string integration_method;
 		tf::TransformBroadcaster broadcaster;
+
+		dynamic_reconfigure::Server<mecanum_wheels::parametersConfig> dynServer;
+		dynamic_reconfigure::Server<mecanum_wheels::parametersConfig>::CallbackType f;
+
+		// void param_callback(std::string *int_method, mecanum_wheels::parametersConfig &config, uint32_t level){
+		void param_callback(mecanum_wheels::parametersConfig &config, uint32_t level){
+			ROS_INFO("Reconfigure Request: %s - Level %d", config.integration_method.c_str(), level);
+			
+			integration_method = config.integration_method;
+		}
 
 		void wheelsCallback(const sensor_msgs::JointState::ConstPtr &wheelsInfo) {
 			// initialize the time
@@ -76,7 +89,7 @@ class odometry{
             pub.publish(msg);
 
 			// Computing position
-			integration_method = "RUNGEKUTTA";
+			// integration_method = "RUNGEKUTTA";
 			if(integration_method == "EULER"){
 				//x += vx*delta*cos(th);
 				//y += vy*delta*sin(th);
@@ -133,13 +146,14 @@ class odometry{
             ros::param::get("~wheel_radius",wheel_radius);
             ros::param::get("~gear_ratio",gear_ratio);
 			ros::param::get("~encoder_resolution", encoder_resolution);
+			f = boost::bind(&odometry::param_callback, this, _1, _2);
+			dynServer.setCallback(f);
 			pub = n.advertise<geometry_msgs::TwistStamped>("cmd_vel",1000);
 			pub_odom = n.advertise<nav_msgs::Odometry>("odom", 1000);
 			sub = n.subscribe("/wheel_states", 1000, &odometry::wheelsCallback, this);
 			started = false;
 		}
 };
-
 
 int main(int argc, char** argv){
 	ros::init(argc, argv, "handler");

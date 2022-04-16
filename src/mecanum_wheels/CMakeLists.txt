@@ -15,10 +15,26 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   tf
+  message_generation
+  dynamic_reconfigure
+)
+
+add_message_files(
+  FILES
+  controlMessage.msg
+)
+
+generate_messages(
+   DEPENDENCIES
+   std_msgs
+)
+
+generate_dynamic_reconfigure_options(
+  cfg/parameters.cfg
 )
 
 ## Declare a catkin package
-catkin_package(CATKIN_DEPENDS sensor_msgs geometry_msgs nav_msgs)
+catkin_package(CATKIN_DEPENDS sensor_msgs geometry_msgs nav_msgs message_runtime)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
@@ -26,8 +42,13 @@ add_executable(odometry src/odometry.cpp)
 add_dependencies(odometry ${catkin_EXPORTED_TARGETS})
 target_link_libraries(odometry ${catkin_LIBRARIES})
 
+add_executable(wheelsControl src/wheelsControl.cpp)
+add_dependencies(wheelsControl ${catkin_EXPORTED_TARGETS})
+target_link_libraries(wheelsControl ${catkin_LIBRARIES})
 
-
+# add_executable(reset src/reset.cpp)
+# add_dependencies(reset ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(reset ${catkin_LIBRARIES})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)

@@ -31,10 +31,10 @@ class pub_sub{
 	public:
 		pub_sub(ros::NodeHandle n){
 			ROS_INFO("Inizio costruttore.");
-			n.getParam("~half_length",half_length);
-            n.getParam("~half_width",half_width);
-            n.getParam("~wheel_radius",wheel_radius);
-            n.getParam("~gear_ratio",gear_ratio);
+			ros::param::get("~half_length",half_length);
+            ros::param::get("~half_width",half_width);
+            ros::param::get("~wheel_radius",wheel_radius);
+            ros::param::get("~gear_ratio",gear_ratio);
 			pub = n.advertise<geometry_msgs::TwistStamped>("cmd_vel",1000);
 			sub = n.subscribe("/wheel_states", 1000, &pub_sub::wheelsCallback, this);
 
