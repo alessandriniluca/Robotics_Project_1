@@ -10,7 +10,7 @@
         <param name = "encoder_resolution" value = "42"/>
         <param name= "half_length" value="0.2"/>
         <param name= "half_width" value="0.169"/>
-        <param name= "wheel_radius" value="0.07"/>
+        <param name= "wheel_radius" value="0.075"/>
         <param name= "gear_ratio" value="5"/>
     </node>
 
