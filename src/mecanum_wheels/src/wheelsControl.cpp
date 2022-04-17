@@ -31,10 +31,10 @@ class wheelsControl{
             double vy = velInfo->twist.linear.y;
             double w = velInfo->twist.angular.z;
 
-            w1 = ((vx - vy - (half_length+half_width)*w)/wheel_radius)*60;
-            w2 = ((vx + vy + (half_length+half_width)*w)/wheel_radius)*60;
-            w3 = ((vx + vy - (half_length+half_width)*w)/wheel_radius)*60;
-            w4 = ((vx - vy + (half_length+half_width)*w)/wheel_radius)*60;
+            w1 = (((vx - vy - (half_length+half_width)*w)/wheel_radius)*gear_ratio)*60;
+            w2 = (((vx + vy + (half_length+half_width)*w)/wheel_radius)*gear_ratio)*60;
+            w3 = (((vx + vy - (half_length+half_width)*w)/wheel_radius)*gear_ratio)*60;
+            w4 = (((vx - vy + (half_length+half_width)*w)/wheel_radius)*gear_ratio)*60;
 
             mecanum_wheels::controlMessage msg;
             msg.rpm_fl = w1;
