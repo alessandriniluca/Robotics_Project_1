@@ -7,6 +7,7 @@
 #include <mecanum_wheels/parametersConfig.h>
 #include <dynamic_reconfigure/server.h>
 #include <cmath>
+#include "mecanum_wheels/Reset.h"
 #define _USE_MATH_DEFINES
 
 /*
@@ -31,11 +32,13 @@ class odometry{
 		// Variable needed to discard the first sample
 		bool started;
 		ros::Time last_time;
-		double x; //ahead
-		double y; //toward left
-		double th; //counter-clockwise
+		double x; //directed ahead
+		double y; //directed toward left
+		double th; //directed counter-clockwise
 		std::string integration_method;
 		tf::TransformBroadcaster broadcaster;
+		ros::ServiceServer service;
+		ros::Time current_time;
 
 		dynamic_reconfigure::Server<mecanum_wheels::parametersConfig> dynServer;
 		dynamic_reconfigure::Server<mecanum_wheels::parametersConfig>::CallbackType f;
@@ -60,7 +63,7 @@ class odometry{
 			}
 
 			// Computing delta time for integration
-			ros::Time current_time = wheelsInfo->header.stamp;
+			current_time = wheelsInfo->header.stamp;
 			double delta = (current_time-last_time).toSec();
 
 
@@ -138,6 +141,41 @@ class odometry{
 			ticks[3] = wheelsInfo->position[3];
         }
 
+		bool reset_funct(mecanum_wheels::Reset::Request &req, mecanum_wheels::Reset::Response &res){
+
+    		ROS_INFO("Changing coordinates x: %f -> %f, y: %f -> %f, th: %f -> %f.",
+                                        x, req.x,
+                                        y, req.y,
+                                        th, req.th 
+                                        );
+			this->x=req.x;
+			this->y=req.y;
+			this->th=req.th;
+
+			//publishing
+			nav_msgs::Odometry odom_msg;
+			odom_msg.pose.pose.position.x = x;
+			odom_msg.pose.pose.position.y = y;
+			odom_msg.pose.pose.position.z = 0;
+			odom_msg.pose.pose.orientation = tf::createQuaternionMsgFromYaw(th);
+			odom_msg.header.frame_id = "odom";
+			odom_msg.child_frame_id = "base_link";
+			pub_odom.publish(odom_msg);
+
+			//tf
+			geometry_msgs::TransformStamped msg_tf;
+			msg_tf.header.stamp = current_time;
+			msg_tf.header.frame_id = "odom";
+			msg_tf.child_frame_id = "base_link";
+			msg_tf.transform.translation.x = x;
+			msg_tf.transform.translation.y = y;
+			msg_tf.transform.translation.z = 0;
+			msg_tf.transform.rotation = tf::createQuaternionMsgFromYaw(th);
+			broadcaster.sendTransform(msg_tf);
+
+			return true;
+		}
+
 	public:
 		odometry(ros::NodeHandle n){
 			ROS_INFO("Inizio costruttore.");
@@ -146,6 +184,7 @@ class odometry{
             ros::param::get("~wheel_radius",wheel_radius);
             ros::param::get("~gear_ratio",gear_ratio);
 			ros::param::get("~encoder_resolution", encoder_resolution);
+			service=n.advertiseService("reset", &odometry::reset_funct, this);
 			f = boost::bind(&odometry::param_callback, this, _1, _2);
 			dynServer.setCallback(f);
 			pub = n.advertise<geometry_msgs::TwistStamped>("cmd_vel",1000);

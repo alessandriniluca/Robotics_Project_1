@@ -24,6 +24,11 @@ add_message_files(
   controlMessage.msg
 )
 
+add_service_files(
+  FILES
+  Reset.srv
+)
+
 generate_messages(
    DEPENDENCIES
    std_msgs
@@ -45,10 +50,6 @@ target_link_libraries(odometry ${catkin_LIBRARIES})
 add_executable(wheelsControl src/wheelsControl.cpp)
 add_dependencies(wheelsControl ${catkin_EXPORTED_TARGETS})
 target_link_libraries(wheelsControl ${catkin_LIBRARIES})
-
-# add_executable(reset src/reset.cpp)
-# add_dependencies(reset ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(reset ${catkin_LIBRARIES})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
