@@ -31,7 +31,12 @@ class odometry{
 		int encoder_resolution;
 		// Variable needed to discard the first sample
 		bool started;
+		bool init_with_bag;
+		bool reset_to_initial_position;
 		ros::Time last_time;
+		double x_initial;
+		double y_initial;
+		double th_initial;
 		double x; //directed ahead
 		double y; //directed toward left
 		double th; //directed counter-clockwise
@@ -46,8 +51,15 @@ class odometry{
 		// void param_callback(std::string *int_method, mecanum_wheels::parametersConfig &config, uint32_t level){
 		void param_callback(mecanum_wheels::parametersConfig &config, uint32_t level){
 			ROS_INFO("Reconfigure Request: %s - Level %d", config.integration_method.c_str(), level);
-			
+			half_length = config.half_length;
+			half_width = config.half_width;
+			wheel_radius = config.wheel_radius;
+			encoder_resolution = config.encoder_resolution;
 			integration_method = config.integration_method;
+			if(reset_to_initial_position != config.reset_to_initial_position){
+				this->started = false;
+				reset_to_initial_position = config.reset_to_initial_position;
+			}
 		}
 
 		void wheelsCallback(const sensor_msgs::JointState::ConstPtr &wheelsInfo) {
@@ -59,6 +71,7 @@ class odometry{
 				ticks[1] = wheelsInfo->position[1];
 				ticks[2] = wheelsInfo->position[2];
 				ticks[3] = wheelsInfo->position[3];
+				read_first_message();
 				return;
 			}
 
@@ -176,6 +189,29 @@ class odometry{
 			return true;
 		}
 
+		void read_first_message(){
+			boost::shared_ptr<geometry_msgs::PoseStamped const> sharedPtr;
+			sharedPtr = ros::topic::waitForMessage<geometry_msgs::PoseStamped>("/robot/pose", ros::Duration(10));
+			if (sharedPtr == NULL)
+				ROS_INFO("No messages received");
+			else
+				//Edit the variable
+				ROS_INFO("First message ok");
+				if(init_with_bag){
+					this->x_initial=sharedPtr->pose.position.x;
+					this->y_initial=sharedPtr->pose.position.y;
+					this->th_initial=tf::getYaw(sharedPtr->pose.orientation);
+					this->x=this->x_initial;
+					this->y=this->y_initial;
+					this->th=this->th_initial;
+					ROS_INFO("Position initialized with the first message");
+				}else{
+					this->x=0;
+					this->y=0;
+					this->th=0;
+				}
+		}
+
 	public:
 		odometry(ros::NodeHandle n){
 			ROS_INFO("Inizio costruttore.");
@@ -184,6 +220,7 @@ class odometry{
             ros::param::get("~wheel_radius",wheel_radius);
             ros::param::get("~gear_ratio",gear_ratio);
 			ros::param::get("~encoder_resolution", encoder_resolution);
+			ros::param::get("~init_with_bag", init_with_bag);
 			service=n.advertiseService("reset", &odometry::reset_funct, this);
 			f = boost::bind(&odometry::param_callback, this, _1, _2);
 			dynServer.setCallback(f);
