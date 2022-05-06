@@ -50,7 +50,7 @@ class odometry{
 
 		// void param_callback(std::string *int_method, mecanum_wheels::parametersConfig &config, uint32_t level){
 		void param_callback(mecanum_wheels::parametersConfig &config, uint32_t level){
-			ROS_INFO("Reconfigure Request: %s - Level %d", config.integration_method.c_str(), level);
+			ROS_INFO("Reconfigure Request");
 			half_length = config.half_length;
 			half_width = config.half_width;
 			wheel_radius = config.wheel_radius;
@@ -107,16 +107,10 @@ class odometry{
 			// Computing position
 			// integration_method = "RUNGEKUTTA";
 			if(integration_method == "EULER"){
-				//x += vx*delta*cos(th);
-				//y += vy*delta*sin(th);
-				//th += w*delta;
 				x += (vx*cos(th)-vy*sin(th))*delta;
 				y += (vx*sin(th)+vy*cos(th))*delta;
 				th += w*delta;
 			}else if (integration_method == "RUNGEKUTTA"){
-				//x += vx*delta*cos(th+ (w*delta/2));
-				//y += vy*delta*sin(th+ (w*delta/2));
-				//th += w*delta;
 				x += (vx*cos(th+ (w*delta/2))-vy*sin(th+(w*delta/2)))*delta;
 				y += (vx*sin(th+ (w*delta/2))+vy*cos(th+(w*delta/2)))*delta;
 				th += w*delta;
@@ -201,15 +195,11 @@ class odometry{
 					this->x_initial=sharedPtr->pose.position.x;
 					this->y_initial=sharedPtr->pose.position.y;
 					this->th_initial=tf::getYaw(sharedPtr->pose.orientation);
-					this->x=this->x_initial;
-					this->y=this->y_initial;
-					this->th=this->th_initial;
 					ROS_INFO("Position initialized with the first message");
-				}else{
-					this->x=0;
-					this->y=0;
-					this->th=0;
 				}
+				this->x=this->x_initial;
+				this->y=this->y_initial;
+				this->th=this->th_initial;
 		}
 
 	public:
@@ -221,6 +211,9 @@ class odometry{
             ros::param::get("~gear_ratio",gear_ratio);
 			ros::param::get("~encoder_resolution", encoder_resolution);
 			ros::param::get("~init_with_bag", init_with_bag);
+			ros::param::get("~initial_pose_X", x_initial);
+			ros::param::get("~initial_pose_Y", y_initial);
+			ros::param::get("~initial_pose_Theta", th_initial);
 			service=n.advertiseService("reset", &odometry::reset_funct, this);
 			f = boost::bind(&odometry::param_callback, this, _1, _2);
 			dynServer.setCallback(f);
@@ -233,7 +226,7 @@ class odometry{
 
 int main(int argc, char** argv){
 	ros::init(argc, argv, "handler");
-	ROS_INFO("Nodo handler partito.");
+	ROS_INFO("odometry Node started.");
 	ros::NodeHandle n;
 	odometry odometry(n);
 	ros::spin();

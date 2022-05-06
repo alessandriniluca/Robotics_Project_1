@@ -62,7 +62,7 @@ class wheelsControl{
 
 int main(int argc, char** argv){
 	ros::init(argc, argv, "handler");
-	ROS_INFO("Nodo handler partito.");
+	ROS_INFO("wheelsControl node started.");
 	ros::NodeHandle n;
 	wheelsControl handler(n);
 

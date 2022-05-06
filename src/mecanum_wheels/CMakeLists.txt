@@ -44,7 +44,7 @@ catkin_package(CATKIN_DEPENDS sensor_msgs geometry_msgs nav_msgs message_runtime
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(odometry src/odometry.cpp)
-add_dependencies(odometry ${catkin_EXPORTED_TARGETS})
+add_dependencies(odometry ${catkin_EXPORTED_TARGETS} ${mecanum_wheels_EXPORTED_TARGETS})
 target_link_libraries(odometry ${catkin_LIBRARIES})
 
 add_executable(wheelsControl src/wheelsControl.cpp)

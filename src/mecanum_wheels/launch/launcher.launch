@@ -12,8 +12,8 @@
         <param name= "half_width" value="0.169"/>
         <param name= "wheel_radius" value="0.075"/>
         <param name= "gear_ratio" value="5"/>
-        <!-- init_with_bag: true - to initialize the position with the first bag message -->
-        <!--                false - to not initialize the position with the first bag message -->
+        <!-- init_with_bag: true - to initialize the position with the first bag message, and ignore "initial_pose" parameters -->
+        <!--                false - to not initialize the position with the first bag message, use "initial_pose" parameters -->
         <param name= "init_with_bag" value="false"/>
     </node>
 
@@ -23,10 +23,6 @@
     <node pkg="mecanum_wheels" type="wheelsControl" name="my_wheelsControl" output="screen" clear_params="true">
 
         <!-- Params-->
-        <param name = "initial_pose_X" value="0" />
-        <param name = "initial_pose_Y" value="0" />
-        <param name = "initial_pose_Theta" value="0" />
-        <param name = "encoder_resolution" value = "42"/>
         <param name= "half_length" value="0.2"/>
         <param name= "half_width" value="0.169"/>
         <param name= "wheel_radius" value="0.075"/>
