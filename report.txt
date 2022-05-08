@@ -14,7 +14,7 @@
 -> initial_pose_Y: set the initial pose along Y axis;
 -> initial_pose_Theta: set the initial Theta;
 -> encoder_resolution: resolution of the encoder used;
--> half_length: wheel position along x ( l);
+-> half_length: wheel position along x (l);
 -> half_width: wheel position along y (w);
 -> wheel_radius: radius of the wheels;
 -> gear_ratio: gear ratio;
@@ -43,5 +43,5 @@ How to use the service:
 
 ### Important/Interesting things
 -> We decided to implement the reading of the first message with a shared pointer.
--> By running rosrun rqt_reconfigure rqt_reconfigure, it is possible to switch between integration methods, it is possible to modify dynamically the half_length, half_width, wheel_radius, encoder_resolution parameters. Moreover, there it is a flag (reset_to_initial_position) which we decided to implement in order to allow us to play more bags, without having to re-start the node: when the status is changed (not flagged -> flagged or flagged -> not flagged) if init_with_bag is set to false, it initializes the position with the parameters passed in input (“initial_pose” parameters), otherwise it waits for the first message of the bag.
+-> By running rosrun rqt_reconfigure rqt_reconfigure, it is possible to switch between integration methods, it is possible to modify dynamically the half_length, half_width, wheel_radius, encoder_resolution parameters. Moreover, there is a flag (reset_to_initial_position) which we decided to implement in order to allow us to play more bags, without having to re-start the node: when the status is changed (not flagged -> flagged or flagged -> not flagged) if init_with_bag is set to false, it initializes the position with the parameters passed in input (“initial_pose” parameters), otherwise it waits for the first message of the bag.
 -> For the tuning of the parameters, we exploited the dynamic reconfigure.
