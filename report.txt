@@ -5,20 +5,20 @@
 
 
 ### Files Description
--> odometry.cpp: this is the main node used to solve the point 1 of the project (compute odometry). It computes v and omega from ticks, it publish them as geometry_msgs/TwistStamped on topic cmd_vel. It allows to integrate with different methods (Euler or Runge-Kutta, selectable with dynamic reconfigure), and can set automatically the initial pose through the first message of the bag (not mandatory to be set like this). It has a service, which allows to reset the odometry to any given pose (solves the point 3).
--> wheelsControl.cpp: this is the node used to solve the inverse problem (point 2): we reversed the formulas, and use the v, omega computed by odometry node (read on cmd_vel), to compute the control speeds of each wheel.
+-> odometry.cpp: this is the main node used to solve the point 1 of the project (compute odometry). It computes v and omega from ticks, it publishes them as geometry_msgs/TwistStamped on topic cmd_vel. It allows to integrate with different methods (Euler or Runge-Kutta, selectable with dynamic reconfigure), and can set automatically the initial pose through the first message of the bag (it not mandatory to set the initial pose with the first message, this can be selected in the launch file as specified in "Important/Interesting things" section). It has a service, which allows to reset the odometry to any given pose (solves the point 3).
+-> wheelsControl.cpp: this is the node used to solve the inverse problem (point 2): we reversed the formulas, and used the v and the omega computed by odometry node (read on cmd_vel) to compute the control speed of each wheel.
 
 
 ### ROS Parameters Descriptions
--> initial_pose_X: set the initial pose along X axis;
--> initial_pose_Y: set the initial pose along Y axis;
--> initial_pose_Theta: set the initial Theta;
+-> initial_pose_X: initial pose along X axis;
+-> initial_pose_Y: initial pose along Y axis;
+-> initial_pose_Theta: initial Theta;
 -> encoder_resolution: resolution of the encoder used;
--> half_length: wheel position along x ( l);
+-> half_length: wheel position along x (l);
 -> half_width: wheel position along y (w);
 -> wheel_radius: radius of the wheels;
 -> gear_ratio: gear ratio;
--> init_with_bag: if set to true, it initialize the position with the first bag message (ignoring the other parameters which set the initial pose), if set to false, it doesn’t initialize the position with the first bag message.
+-> init_with_bag: if set to true, it initializes the pose with the first bag message (ignoring the other parameters which set the initial pose), if set to false, it doesn’t initialize the pose with the first bag message, and uses the proper parameters in the launch file to set the initial pose.
 
 ### TF structure
 world->odom->base_link
@@ -43,5 +43,8 @@ How to use the service:
 
 ### Important/Interesting things
 -> We decided to implement the reading of the first message with a shared pointer.
--> By running rosrun rqt_reconfigure rqt_reconfigure, it is possible to switch between integration methods, it is possible to modify dynamically the half_length, half_width, wheel_radius, encoder_resolution parameters. Moreover, there it is a flag (reset_to_initial_position) which we decided to implement in order to allow us to play more bags, without having to re-start the node: when the status is changed (not flagged -> flagged or flagged -> not flagged). If init_with_bag is set to false, it initialize the position with the parameters passed in input (“initial_pose” parameters), otherwise it waits for the first message of the bag.
+-> By running rosrun rqt_reconfigure rqt_reconfigure, it is possible to:
+	-switch between integration methods
+	-modify dynamically the half_length, half_width, wheel_radius, encoder_resolution parameters.
+	-moreover, there is a flag (reset_to_initial_position) which we decided to implement in order to allow us to play more bags, without having to restart the node: when the status is changed (not flagged -> flagged or flagged -> not flagged) if init_with_bag is set to false, it initializes the position with the parameters passed in input (“initial_pose” parameters), otherwise it waits for the bag message.
 -> For the tuning of the parameters, we exploited the dynamic reconfigure.
