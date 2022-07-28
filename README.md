@@ -60,7 +60,7 @@ Given bags:
 - Mattia Portanti (added as collaborator)
 
 ## How we divided the work
-We decided to face this challenge for the most part with in-presence meetings, where we discussed and implemented together differenc choices
+We decided to face this challenge for the most part with in-presence meetings, where we discussed and implemented together different choices
 
 ## How to replicate our results
 We developed this on Ubuntu 18, with ROS Melodic. Once having downloaded the workspace, it is necessary to link it into the bashrc file and build it in order to use the project.
