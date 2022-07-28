@@ -67,9 +67,3 @@ We developed this on Ubuntu 18, with ROS Melodic. Once having downloaded the wor
 
 ## Submission
 We had to submit not the whole workspace, but just only our package.
-
-## Score
-The exam was scored in this way:
-
-- Written exams: 26 points;
-- Two projects: 3+3.
